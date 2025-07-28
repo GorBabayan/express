@@ -1,26 +1,44 @@
 const express = require('express');
+const fs = require('node:fs');
+const path = require('path');
 const app = express();
 
 app.use(express.json());
-const PORT = 3015;
+const PORT = 3031;
 
-let users = [];
-let id = 1;
+let id = 0;
+let fileUrl = path.join(__dirname, "file.json");
 
-app.get('/users', (req, res) => {
+
+function readUsers() { 
+    let data = fs.readFileSync(fileUrl, "utf-8");
+
+    return JSON.parse(data);
+}
+
+function writeUsers() {
+    fs.writeFileSync(fileUrl, JSON.stringify(users, null, 2), "utf-8");
+}
+
+app.get('/fileUrl', (req, res) => {
+    let users = readUsers();
     res.json(users);
 });
 
-app.post('/users', (req, res) => {
+app.post('/fileUrl', (req, res) => {
+    let users = readUsers();
     const { name, surname } = req.body;
     
-    const newUser = { id: ++id, name, surname };
+    let newId = users.length > 0 ? users[users.length - 1] + 1 : 1;
+    const newUser = { id: newId, name, surname };
     users.push(newUser);
+    writeUsers(users);
     res.status(201).json(newUser);
 });
 
 
-app.delete('/users/:id', (req, res) => {
+app.delete('/fileUrl', (req, res) => {
+   let users = readUsers();
    const id = parseInt(req.params.id);
    const index = users.findIndex(u => u.id == id);
 
@@ -29,11 +47,12 @@ app.delete('/users/:id', (req, res) => {
    }
 
    const deletedUser = users.splice(index, 1)[0];
-
+   writeUsers(users);
    res.json({ letter: "User deleted", user: deletedUser });
 });
 
-app.put('/users/:id', (req, res) => {
+app.put('/fileUrl', (req, res) => {
+   let users = readUsers();
    const id = parseInt(req.params.id);
    const { name, surname } = req.body;
 
@@ -43,9 +62,10 @@ app.put('/users/:id', (req, res) => {
     res.status(404).json("User not found");
    }
 
-    user.name = name;
-    user.surname = surname;
-
+   user.name = name;
+   user.surname = surname;
+   
+   writeUsers();
    res.json(user);
 });
 

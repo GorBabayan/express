@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Gor",
+      "surname": "Babayan"
+    },
+    {
+      "id": "2",
+      "name": "Vardan",
+      "surname": "Babayan"
+    },
+    {
+      "id": "3",
+      "name": "Elen",
+      "surname": "Hayrapetyan"
+    }
+  ]
+}
