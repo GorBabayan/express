@@ -12,7 +12,6 @@ app.get('/users', (req, res) => {
 
 app.post('/users', (req, res) => {
     let info = readUsers();
-    console.log(info);
     const { name, surname } = req.body;
     
     let users = info.users;
