@@ -1,71 +1,60 @@
 const express = require('express');
-const fs = require('node:fs');
-const path = require('path');
 const app = express();
+const { readUsers, writeUsers } = require('./helpers.js');
 
 app.use(express.json());
-const PORT = 3031;
+const PORT = 3054;
 
-let id = 0;
-let fileUrl = path.join(__dirname, "file.json");
-
-
-function readUsers() { 
-    let data = fs.readFileSync(fileUrl, "utf-8");
-
-    return JSON.parse(data);
-}
-
-function writeUsers() {
-    fs.writeFileSync(fileUrl, JSON.stringify(users, null, 2), "utf-8");
-}
-
-app.get('/fileUrl', (req, res) => {
-    let users = readUsers();
-    res.json(users);
+app.get('/users', (req, res) => {
+    let info = readUsers();
+    res.json(info.users);
 });
 
-app.post('/fileUrl', (req, res) => {
-    let users = readUsers();
+app.post('/users', (req, res) => {
+    let info = readUsers();
+    console.log(info);
     const { name, surname } = req.body;
     
-    let newId = users.length > 0 ? users[users.length - 1] + 1 : 1;
+    let users = info.users;
+    let newId = users.length > 0 ? Number(users[users.length - 1].id) + 1 : 1;
     const newUser = { id: newId, name, surname };
     users.push(newUser);
-    writeUsers(users);
+    writeUsers({ users });
     res.status(201).json(newUser);
 });
 
 
-app.delete('/fileUrl', (req, res) => {
-   let users = readUsers();
+app.delete('/users/:id', (req, res) => {
+   let info = readUsers();
+   let users = info.users;
    const id = parseInt(req.params.id);
    const index = users.findIndex(u => u.id == id);
 
    if (index == -1) {
-        res.status(404).json("User not found");
+        return res.status(404).json("User not found");
    }
 
    const deletedUser = users.splice(index, 1)[0];
-   writeUsers(users);
+   writeUsers({ users });
    res.json({ letter: "User deleted", user: deletedUser });
 });
 
-app.put('/fileUrl', (req, res) => {
-   let users = readUsers();
+app.put('/users/:id', (req, res) => {
+   let info = readUsers();
    const id = parseInt(req.params.id);
    const { name, surname } = req.body;
 
+   let users = info.users;
    const user = users.find(u => id == u.id);
 
-   if (!user) {
-    res.status(404).json("User not found");
+   if (!user.name || !user.surname) {
+    return res.status(404).json("User not found");
    }
 
-   user.name = name;
-   user.surname = surname;
+   user.name = name === undefined ? user.name : name;
+   user.surname = surname === undefined ? user.surname : surname;
    
-   writeUsers();
+   writeUsers({ users });
    res.json(user);
 });
 
