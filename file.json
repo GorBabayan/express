@@ -1,24 +1,20 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "name": "Ruben",
-      "surname": "Vardanyan"
-    },
-    {
-      "id": 2,
-      "name": "Vazgen",
-      "surname": "Sargsyan"
-    },
-    {
-      "id": 3,
-      "name": "Samvel",
-      "surname": "Babayan"
-    },
-    {
-      "id": 4,
-      "name": "Gor",
-      "surname": "Babayan"
-    }
-  ]
+  "ba0a3991-8a8f-41c8-9536-cae9bee241e8": {
+    "name": "Armen"
+  },
+  "2e90d075-964a-4280-96bf-e284c7459492": {
+    "meta": 5,
+    "name": "Vardan",
+    "surname": "Grigoryan",
+    "email": "gorbabyan@gmail.com"
+  },
+  "65b9e5b3-4a66-4ca7-878b-227b41b0d82f": {
+    "meta": 5,
+    "name": "Vardan",
+    "surname": "Grigoryan"
+  },
+  "4d046217-ac41-404c-b536-1a3fa1c9a4bb": {
+    "name": "Gor",
+    "surname": "Sargsyan"
+  }
 }

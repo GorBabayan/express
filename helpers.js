@@ -9,6 +9,7 @@ function readUsers() {
     return JSON.parse(data);
 }
 
+
 function writeUsers(users) {
     fs.writeFileSync(fileUrl, JSON.stringify(users, null, 2), "utf-8");
 }
