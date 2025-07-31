@@ -4,13 +4,13 @@ require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const { readUsers, writeUsers } = require('./helpers.js');
 const { checkIsUnique, changeEmail } = require('./checkOrChange.js');
+const { usersPostSchema, usersUpdateSchema, validate } = require('./validation.js');
 app.use(express.json());
 app.set('PORT', process.env.PORT || 3080);
 
-// made email O(1), now email and id get operation O(1)
+
 app.get('/users/:id_or_email', (req, res) => {
     const { usersById, emailToId } = readUsers();
-    // i don't know here will be id or email because of that not use destructuring
     let param = req.params.id_or_email;
 
     if (usersById[param]) {
@@ -22,16 +22,16 @@ app.get('/users/:id_or_email', (req, res) => {
         return res.json(usersById[userId]);
     }
 
-    return res.status(404).json({ message: "User not found" });
+    return res.status(400).json({ message: "User not found" });
 });
 
 
-app.post('/users', (req, res) => {
+app.post('/users', validate(usersPostSchema), (req, res) => {
     const { usersById, emailToId } = readUsers();
     const { name, surname, email, meta } = req.body;
     
     if (emailToId[email]) {
-        return res.status(404).json({ letter: "Email must be unique" });
+        return res.status(400).json({ letter: "Email must be unique" });
     }
 
     let id = uuidv4();
@@ -46,11 +46,10 @@ app.post('/users', (req, res) => {
 
 app.delete('/users/:id', (req, res) => {
    let { usersById, emailToId } = readUsers();
-   // used destructuring here
    const { id } = req.params;
 
    if (!usersById[id]) {
-        return res.status(404).json({ letter: "User not found" });
+        return res.status(400).json({ letter: "User not found" });
    }
 
    const deletedUser = usersById[id];
@@ -62,16 +61,15 @@ app.delete('/users/:id', (req, res) => {
 });
 
 
-app.patch('/users/:id', (req, res) => {
+app.patch('/users/:id', validate(usersUpdateSchema), (req, res) => {
     let { usersById, emailToId } = readUsers();
     const { id } = req.params;
 
     if (!usersById[id]) {
-        return res.status(404).json({ message: "User not found" });;
+        return res.status(400).json({ message: "User not found" });;
     }
 
     const update = req.body;
-  // made optimizations in put and patch operation code repeated I separate in another file
     try {
         checkIsUnique(id, update.email, emailToId);
         changeEmail(id, update.email, usersById, emailToId);
@@ -87,12 +85,12 @@ app.patch('/users/:id', (req, res) => {
 
 
 
-app.put('/users/:id', (req, res) => {
+app.put('/users/:id', validate(usersPostSchema), (req, res) => {
    let { usersById, emailToId } = readUsers();
    const { id } = req.params;
 
    if (!usersById[id]) {
-        return res.status(404).json({ message: "User not found"});;
+        return res.status(400).json({ message: "User not found"});;
    }
 
    const { name, surname, email, meta } = req.body;
