@@ -3,104 +3,111 @@ const app = express();
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const { readUsers, writeUsers } = require('./helpers.js');
+const { checkIsUnique, changeEmail } = require('./checkOrChange.js');
 app.use(express.json());
 app.set('PORT', process.env.PORT || 3080);
 
-   // TODO add id as first level obecht key in json
+// made email O(1), now email and id get operation O(1)
+app.get('/users/:id_or_email', (req, res) => {
+    const { usersById, emailToId } = readUsers();
+    // i don't know here will be id or email because of that not use destructuring
+    let param = req.params.id_or_email;
 
-app.get('/users/:id', (req, res) => {
-    let users = readUsers();
-    let param = req.params.id;
-
-    let user = users[param];
-    if (!user) {
-        return res.status(404).json("User not found");
+    if (usersById[param]) {
+        return res.json(usersById[param]);
     }
 
-    res.json(user);
+    let userId = emailToId[param];
+    if (userId && usersById[userId]) {
+        return res.json(usersById[userId]);
+    }
+
+    return res.status(404).json({ message: "User not found" });
 });
 
 
-// TODO user can have email which is unique
-// TODO userId must be UUID
-// user add operation needs to recieve metadata and then spread
-
-// get operation with id and email needs to be o(1)
-
 app.post('/users', (req, res) => {
-    let users = readUsers();
+    const { usersById, emailToId } = readUsers();
     const { name, surname, email, meta } = req.body;
     
-    if (Object.values(users).some(u => u.email === email)) {
+    if (emailToId[email]) {
         return res.status(404).json({ letter: "Email must be unique" });
     }
 
     let id = uuidv4();
-    const newUser = { ...meta, name, surname, email };
-    users[id] = newUser;
+    const newUser = { meta, name, surname, email };
+    usersById[id] = newUser;
+    emailToId[email] = id;
     
-    writeUsers(users);
+    writeUsers({ usersById, emailToId });
     res.status(201).json(newUser);
 });
 
 
 app.delete('/users/:id', (req, res) => {
-   let users = readUsers();
-   const id = req.params.id;
+   let { usersById, emailToId } = readUsers();
+   // used destructuring here
+   const { id } = req.params;
 
-   if (!users[id]) {
+   if (!usersById[id]) {
         return res.status(404).json({ letter: "User not found" });
    }
 
-   const deletedUser = users[id];
-   delete users[id];
+   const deletedUser = usersById[id];
+   delete usersById[id];
+   delete emailToId[deletedUser.email];
 
-   writeUsers(users);
+   writeUsers({ usersById, emailToId });
    res.json({ letter: "User deleted", user: deletedUser });
 });
 
 
-   // TODO add patch
 app.patch('/users/:id', (req, res) => {
-    let users = readUsers();
-    const id = req.params.id;
+    let { usersById, emailToId } = readUsers();
+    const { id } = req.params;
 
-    if (!users[id]) {
-        return res.status(404).json({ message: "User not found"});;
+    if (!usersById[id]) {
+        return res.status(404).json({ message: "User not found" });;
     }
 
     const update = req.body;
-
-    if (update.email && Object.values(users).some(u => u.email === update.email && u.id !== id)) {
-        return res.status(404).json({ message: "Email must be unique" }); 
+  // made optimizations in put and patch operation code repeated I separate in another file
+    try {
+        checkIsUnique(id, update.email, emailToId);
+        changeEmail(id, update.email, usersById, emailToId);
+    } catch(err) {
+        console.error(err);
     }
 
-    users[id] = { ...users[id], ...update };
-    writeUsers(users);
+    usersById[id] = { ...usersById[id], ...update };
+    writeUsers({ usersById, emailToId });
 
-    res.json(users[id]);
+    res.json(usersById[id]);
 });
 
 
 
 app.put('/users/:id', (req, res) => {
-   let users = readUsers();
-   const id = req.params.id;
+   let { usersById, emailToId } = readUsers();
+   const { id } = req.params;
 
-   if (!users[id]) {
+   if (!usersById[id]) {
         return res.status(404).json({ message: "User not found"});;
    }
 
    const { name, surname, email, meta } = req.body;
 
-   if (email && Object.values(users).some(u => u.email === email && u.id !== id)) {
-        return res.status(404).json({ message: "Email must be unique" }); 
+   try {
+        checkIsUnique(id, email, emailToId);
+        changeEmail(id, email, usersById, emailToId);
+   } catch(err) {
+        console.error(err);
    }
-   
-   users[id] = { ...meta, name, surname, email };
 
-   writeUsers(users);
-   res.json(users[id]);
+   usersById[id] = { meta, name, surname, email };
+
+   writeUsers({ usersById, emailToId });
+   res.json(usersById[id]);
 });
 
 app.listen(app.get('PORT'), () => {

@@ -1,20 +1,20 @@
 {
-  "ba0a3991-8a8f-41c8-9536-cae9bee241e8": {
-    "name": "Armen"
+  "usersById": {
+    "cda663a3-20e6-4877-b53a-795f257a663b": {
+      "meta": "okaya sax",
+      "name": "Gor",
+      "surname": "Babayan",
+      "email": "gorbabaayan@gmail.com"
+    },
+    "fcdf2120-ab9c-46b7-b861-4e5bb6cc74a8": {
+      "meta": "ashxatox koda lriv",
+      "name": "Vardan",
+      "surname": "Grigoryan",
+      "email": "vardangrigoryan@gmail.com"
+    }
   },
-  "2e90d075-964a-4280-96bf-e284c7459492": {
-    "meta": 5,
-    "name": "Vardan",
-    "surname": "Grigoryan",
-    "email": "gorbabyan@gmail.com"
-  },
-  "65b9e5b3-4a66-4ca7-878b-227b41b0d82f": {
-    "meta": 5,
-    "name": "Vardan",
-    "surname": "Grigoryan"
-  },
-  "4d046217-ac41-404c-b536-1a3fa1c9a4bb": {
-    "name": "Gor",
-    "surname": "Sargsyan"
+  "emailToId": {
+    "gorbabaayan@gmail.com": "cda663a3-20e6-4877-b53a-795f257a663b",
+    "vardangrigoryan@gmail.com": "fcdf2120-ab9c-46b7-b861-4e5bb6cc74a8"
   }
 }
