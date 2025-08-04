@@ -1,5 +1,6 @@
-const Joi = require('joi');
-const StatusCodes = require('http-status-codes');
+import Joi, { ObjectSchema } from 'joi';
+import { Request, Response, NextFunction } from 'express';
+import StatusCodes from 'http-status-codes';
 
 const usersPostSchema = Joi.object({
     name: Joi.string().alphanum().min(1).required(),
@@ -15,12 +16,12 @@ const usersUpdateSchema = Joi.object({
     meta: Joi.any().optional()
 }).min(1);
 
-const validate = (schema) => (req, res, next) => {
+const validate = (schema: ObjectSchema) => (req: Request, res: Response, next: NextFunction) => {
     if (!schema) {
         return next();
     }
 
-    const options = {
+    const options: object = {
         abortEarly: false,
         stripUnknown: true,
         errors: {
@@ -34,7 +35,7 @@ const validate = (schema) => (req, res, next) => {
 
     if (!error) {
         req.body = value;
-        next();
+        return next();
     }
 
     const errorDetails = error.details.map(detail => ({
@@ -49,7 +50,7 @@ const validate = (schema) => (req, res, next) => {
     });
 }
 
-module.exports = {
+export {
     usersPostSchema,
     usersUpdateSchema, 
     validate
