@@ -16,7 +16,6 @@ app.get('/users/:id_or_email', async (req: Request<{ id_or_email: string }>, res
 
     try {
        const result = await pool.query('SELECT * FROM users WHERE id::text = $1 OR email = $1 LIMIT 1', [id_or_email]);
-
        if (result.rows.length === 0) {
             return res.status(404).json({ message: "User not found" });
        }
