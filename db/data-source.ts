@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
+
 export const AppDataSource = new DataSource({
     type: 'postgres',
     host: process.env.DB_HOST,
@@ -15,4 +16,5 @@ export const AppDataSource = new DataSource({
     synchronize: false,
     logging: false,
     entities: [User],
+    migrations: ["migrations/*{.ts,.js}"],
 })

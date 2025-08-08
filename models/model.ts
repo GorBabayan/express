@@ -1,13 +1,15 @@
 import { AppDataSource } from "../db/data-source";
 import { User } from "../types/types";
+import { isUUID } from "class-validator";
 
 const userRepo = AppDataSource.getRepository(User);
-//not use direct queries use typeORM commands
+//here use typeORM commands delete QueryBuilder
 export const findUserByIdOrEmail = async (idOrEmail: string) => {
-    return await userRepo
-        .createQueryBuilder("user")
-        .where(`"user"."id"::text = :idOrEmail OR "user"."email" = :idOrEmail`, { idOrEmail })
-        .getOne()
+    if (isUUID(idOrEmail)) {
+        return await userRepo.findOne({ where: { id: idOrEmail } });
+    } else {
+        return await userRepo.findOne({ where: { email: idOrEmail } });
+    }
 }
 
 export const createUser = async (user: User) => {
