@@ -33,6 +33,11 @@ export class createUsersTable1754661788853 implements MigrationInterface {  // u
             isUnique: true,
           },
           {
+            name: 'password',
+            type: 'text',
+            isNullable: false,
+          },
+          {
             name: 'meta',
             type: 'jsonb',
             isNullable: true,

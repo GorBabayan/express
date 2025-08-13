@@ -4,7 +4,6 @@ import { validate } from '../middlewares/validation';
 import { usersPostSchema, usersUpdateSchema } from '../validators/schema';
 
 const router = express.Router();
-//use router
 router.get('/:id_or_email', validate(usersUpdateSchema), UserController.getUsers);
 router.post('/', validate(usersPostSchema), UserController.postUser);
 router.delete('/:id', UserController.deleteUser);

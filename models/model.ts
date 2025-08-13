@@ -1,6 +1,7 @@
 import { AppDataSource } from "../db/data-source";
 import { User } from "../types/types";
 import { isUUID } from "class-validator";
+import bcrypt from 'bcryptjs';
 
 const userRepo = AppDataSource.getRepository(User);
 //here use typeORM commands delete QueryBuilder
@@ -12,8 +13,9 @@ export const findUserByIdOrEmail = async (idOrEmail: string) => {
     }
 }
 
-export const createUser = async (user: User) => {
-    const newUser = userRepo.create(user);
+export const createUser = async (user: User) => { 
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const newUser = userRepo.create({ ...user, password: hashedPassword });
     return await userRepo.save(newUser);
 }
 

@@ -3,8 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import * as UserModel from '../models/model.ts';
 import { BadRequestError, ConflictError } from 'errors/error.ts';
 
-//made any less
-
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = await UserModel.findUserByIdOrEmail(req.params.id_or_email);

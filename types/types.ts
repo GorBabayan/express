@@ -14,6 +14,9 @@ export class User {
     @Column({ unique: true })
     email: string;
 
+    @Column()
+    password: string;
+    
     @Column({ type: 'jsonb', nullable: true })
     meta: any;
 }
