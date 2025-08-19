@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ObjectSchema } from 'joi';
 import StatusCodes from 'http-status-codes';
 
-//validation and schema seperated
+
 export const validate = (schema: ObjectSchema) => (req: Request, res: Response, next: NextFunction) => {
     if (!schema) {
         return next();

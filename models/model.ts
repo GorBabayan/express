@@ -1,10 +1,10 @@
 import { AppDataSource } from "../db/data-source";
-import { User } from "../types/types";
+import { User } from "../entities/users";
 import { isUUID } from "class-validator";
 import bcrypt from 'bcryptjs';
 
 const userRepo = AppDataSource.getRepository(User);
-//here use typeORM commands delete QueryBuilder
+
 export const findUserByIdOrEmail = async (idOrEmail: string) => {
     if (isUUID(idOrEmail)) {
         return await userRepo.findOne({ where: { id: idOrEmail } });
