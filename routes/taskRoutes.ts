@@ -1,5 +1,12 @@
 import Router from 'express';
 import { createTask, getProjectTasks, getTaskDetail, reassignTask } from '../controllers/taskController';
+import { validate } from '../middlewares/validation';
+import { 
+    createTaskSchema, 
+    getProjectTasksSchema, 
+    getTaskDetailSchema, 
+    taskReassignSchema 
+} from '../validators/TaskSchema';
 
 const router = Router();
 
@@ -31,7 +38,7 @@ const router = Router();
  *       201:
  *         description: Task created successfully
  */
-router.post('/', createTask); 
+router.post('/', validate(createTaskSchema), createTask); 
 
 /**
  * @swagger
@@ -48,7 +55,7 @@ router.post('/', createTask);
  *       200:
  *         description: List of tasks for the project
  */
-router.get('/project/:projectId', getProjectTasks);
+router.get('/project/:projectId', validate(getProjectTasksSchema), getProjectTasks);
 
 /**
  * @swagger
@@ -65,7 +72,7 @@ router.get('/project/:projectId', getProjectTasks);
  *       200:
  *         description: Task details
  */
-router.get('/:taskId', getTaskDetail);
+router.get('/:taskId', validate(getTaskDetailSchema), getTaskDetail);
 
 /**
  * @swagger
@@ -94,6 +101,6 @@ router.get('/:taskId', getTaskDetail);
  *       404:
  *         description: Task not found
  */
-router.put('/:taskId/reassign', reassignTask);
+router.put('/:taskId/reassign', validate(taskReassignSchema), reassignTask);
 
 export default router;

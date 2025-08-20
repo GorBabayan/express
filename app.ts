@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(urlencoded({ extended: true }));
 
 app.use(cors({
-    origin: 'https://c67de10fa305.ngrok-free.app',
+    origin: 'https://622703aa9d39.ngrok-free.app',
     credentials: true, 
 }));
 

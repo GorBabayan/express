@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import * as UserModel from '../models/model.ts';
+import { User } from "../entities/users";
 import { BadRequestError, ConflictError } from 'errors/error.ts';
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = await UserModel.findUserByIdOrEmail(req.params.id_or_email);
+        const user: User | null = await UserModel.findUserByIdOrEmail(req.params.id_or_email);
 
         res.json(user);
     } catch (err) {
@@ -15,7 +16,7 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
 
 export const postUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const newUser = await UserModel.createUser(req.body);
+        const newUser: User = await UserModel.createUser(req.body);
         res.status(201).json(newUser);
     } catch (err) {
         next(err);
@@ -25,7 +26,7 @@ export const postUser = async (req: Request, res: Response, next: NextFunction) 
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const deletedUser = await UserModel.deleteUser(req.params.id);
+        const deletedUser: User | null = await UserModel.deleteUser(req.params.id);
 
         res.json({ message: "User Deleted", user: deletedUser });
     } catch (err) {
@@ -35,7 +36,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
 export const putUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const updatedUser = await UserModel.updateUser(req.params.id, req.body);
+        const updatedUser: User | null = await UserModel.updateUser(req.params.id, req.body);
 
         res.json(updatedUser);
     } catch (err) {
@@ -45,7 +46,7 @@ export const putUser = async (req: Request, res: Response, next: NextFunction) =
 
 export const patchUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const updatedUser = await UserModel.patchUser(req.params.id, req.body);
+        const updatedUser: User | null = await UserModel.patchUser(req.params.id, req.body);
 
         res.json(updatedUser);
     } catch(err) {

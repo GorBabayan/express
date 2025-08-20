@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 const userRepo = AppDataSource.getRepository(User);
 
-export const findUserByIdOrEmail = async (idOrEmail: string) => {
+export const findUserByIdOrEmail = async (idOrEmail: string): Promise<User | null> => {
     if (isUUID(idOrEmail)) {
         return await userRepo.findOne({ where: { id: idOrEmail } });
     } else {
@@ -13,14 +13,14 @@ export const findUserByIdOrEmail = async (idOrEmail: string) => {
     }
 }
 
-export const createUser = async (user: User) => { 
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    const newUser = userRepo.create({ ...user, password: hashedPassword });
+export const createUser = async (user: User): Promise<User> => { 
+    const hashedPassword: string = await bcrypt.hash(user.password, 10);
+    const newUser: User = userRepo.create({ ...user, password: hashedPassword });
     return await userRepo.save(newUser);
 }
 
-export const deleteUser = async (id: string) => {
-    const user = await userRepo.findOneBy({ id });
+export const deleteUser = async (id: string): Promise<User | null> => {
+    const user: User | null = await userRepo.findOneBy({ id });
 
     if (!user) {
         return null;
@@ -31,8 +31,8 @@ export const deleteUser = async (id: string) => {
     return user;
 }
 
-export const updateUser = async (id: string, data: Partial<User>) => {
-   const user = await userRepo.findOneBy({ id });
+export const updateUser = async (id: string, data: Partial<User>): Promise<User | null> => {
+   const user: User | null = await userRepo.findOneBy({ id });
 
     if (!user) {
         return null;

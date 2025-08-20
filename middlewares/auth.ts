@@ -1,14 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { JwtPayloadType, AuthRequest } from 'types/interfaces';
 
 dotenv.config();
 
-export interface AuthRequest extends Request {
-  user?: any
-}
-
-export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+  const authReq = req as AuthRequest;
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -22,7 +20,7 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
       return res.status(403).json({ message: "Token not found or expired" });
     }
 
-    req.user = decoded;
+    authReq.user = decoded as JwtPayloadType;
     next();
   })
 }

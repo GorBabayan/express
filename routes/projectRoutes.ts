@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { createProject, listProjects } from '../controllers/projectController';
 import { authenticateJWT } from '../middlewares/auth';
+import { validate } from '../middlewares/validation';
+import { createProjectSchema, listProjectsSchema } from '../validators/ProjectSchema';
 
 
 const router = Router();
@@ -29,7 +31,7 @@ const router = Router();
  *       401:
  *         description: Unauthorized
  */
-router.post("/", authenticateJWT, createProject);
+router.post("/", authenticateJWT, validate(createProjectSchema), createProject);
 
 /**
  * @swagger
@@ -44,7 +46,7 @@ router.post("/", authenticateJWT, createProject);
  *       401:
  *         description: Unauthorized
  */
-router.get("/", authenticateJWT, listProjects);
+router.get("/", authenticateJWT, validate(listProjectsSchema), listProjects);
 
 
 

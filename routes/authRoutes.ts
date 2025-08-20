@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
+import { LoginUserBody, JwtPayloadType, AuthRequest } from '../types/interfaces';
 import { AppDataSource } from '../db/data-source';
 import { User } from '../entities/users';
 import dotenv from 'dotenv';
-import { authenticateJWT, AuthRequest } from '../middlewares/auth';
+import { authenticateJWT } from '../middlewares/auth';
 
 dotenv.config();
 const router = Router();
@@ -51,7 +52,7 @@ const options: SignOptions = { expiresIn: expiresIn as any };
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request<{}, {}, LoginUserBody>, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -97,9 +98,15 @@ router.post('/login', async (req: Request, res: Response) => {
  *       404:
  *         description: User not found
  */
-router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response) => {
+router.get('/me', authenticateJWT, async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+
+  if (!authReq.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
   const userRepo = AppDataSource.getRepository(User);
-  const user = await userRepo.findOneBy({ id: req.user.id });
+  const user = await userRepo.findOneBy({ id: authReq.user.id });
 
   if (!user) {
     return res.status(404).json({ message: "User not found" });
