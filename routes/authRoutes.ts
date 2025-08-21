@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { LoginUserBody, JwtPayloadType, AuthRequest } from '../types/interfaces';
@@ -52,7 +52,7 @@ const options: SignOptions = { expiresIn: expiresIn as any };
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', async (req: Request<{}, {}, LoginUserBody>, res: Response) => {
+router.post('/login', async (req: Request<{}, {}, LoginUserBody>, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -60,20 +60,24 @@ router.post('/login', async (req: Request<{}, {}, LoginUserBody>, res: Response)
     }
 
     const userRepo = AppDataSource.getRepository(User);
-    const user = await userRepo.findOneBy({ email });
+    try {
+        const user = await userRepo.findOneBy({ email });
 
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+        if (!user) {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        const isValid = await user.validatePassword(password);
+        if (!isValid) {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        const token = jwt.sign({ id: user.id, email: user.email }, secret, options);
+
+        return res.json({ token });
+    } catch(err) {
+      next(err);
     }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign({ id: user.id, email: user.email }, secret, options);
-
-    return res.json({ token });
 });
 
 /**

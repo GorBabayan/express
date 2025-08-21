@@ -14,8 +14,7 @@ export const findUserByIdOrEmail = async (idOrEmail: string): Promise<User | nul
 }
 
 export const createUser = async (user: User): Promise<User> => { 
-    const hashedPassword: string = await bcrypt.hash(user.password, 10);
-    const newUser: User = userRepo.create({ ...user, password: hashedPassword });
+    const newUser: User = userRepo.create(user);
     return await userRepo.save(newUser);
 }
 
