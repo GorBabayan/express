@@ -12,7 +12,6 @@ export class CreateCommentsTable1755516122728 implements MigrationInterface {
                         type: 'uuid',
                         isPrimary: true,
                         isNullable: false,
-                        generationStrategy: 'uuid',
                         default: 'uuid_generate_v4()',
                     },
                     {
@@ -22,6 +21,11 @@ export class CreateCommentsTable1755516122728 implements MigrationInterface {
                     },
                     {
                         name: 'task_id',
+                        type: 'uuid',
+                        isNullable: false,
+                    },
+                    {
+                        name: 'author_id',
                         type: 'uuid',
                         isNullable: false,
                     },
@@ -58,6 +62,16 @@ export class CreateCommentsTable1755516122728 implements MigrationInterface {
         await queryRunner.createForeignKey(
             'comments',
             new TableForeignKey({
+                columnNames: ['author_id'],
+                referencedTableName: 'users',
+                referencedColumnNames: ['id'],
+                onDelete: 'CASCADE',
+            })
+        );
+
+        await queryRunner.createForeignKey(
+            'comments',
+            new TableForeignKey({
                 columnNames: ['assigned_to'],
                 referencedTableName: 'users',
                 referencedColumnNames: ['id'],
@@ -67,6 +81,6 @@ export class CreateCommentsTable1755516122728 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('comments');
+        await queryRunner.dropTable("comments", true, true);
     }
 }

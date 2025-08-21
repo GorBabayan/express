@@ -11,6 +11,8 @@ export class CreateTasksTable1699999999999 implements MigrationInterface {
                         name: "id",
                         type: "uuid",
                         isPrimary: true,
+                        isGenerated: true,
+                        generationStrategy: "uuid",
                     },
                     {
                         name: "project_id",
@@ -77,6 +79,6 @@ export class CreateTasksTable1699999999999 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("tasks");
+        await queryRunner.dropTable("tasks", true, true);
     }
 }
