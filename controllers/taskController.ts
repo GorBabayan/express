@@ -11,6 +11,12 @@ const taskRepo = AppDataSource.getRepository(Task);
 const userRepo = AppDataSource.getRepository(User);
 const projectRepo = AppDataSource.getRepository(Project);
 
+/**
+ * @throws { AppError } If project not found.
+ * @throws { AppError } If assignee(user) not found.
+ * @throws { Error } For unexpected database or runtime errors.
+*/
+
 export const createTask = async (req: Request<{}, {}, CreateTaskBody>, res: Response, next: NextFunction) => {
     try {
         const { title, projectId, assignedToId, status = "todo", dueDate } = req.body;
@@ -40,6 +46,9 @@ export const createTask = async (req: Request<{}, {}, CreateTaskBody>, res: Resp
     } 
 }
 
+/**
+@throws { Error } For unexpected database or runtime errors.
+ */
 export const getProjectTasks = async (req: Request<{}, {}, GetTasksQuery>, res: Response, next: NextFunction) => {
     try {
         const { projectId, status, dueBefore, dueAfter } = req.body;
@@ -75,6 +84,11 @@ export const getProjectTasks = async (req: Request<{}, {}, GetTasksQuery>, res: 
     }
 } 
 
+/**
+ * @throws { AppError } If task not found.
+ * @throws { Error } For unexpected database or runtime errors.
+ */
+
 export const getTaskDetail = async (req: Request<{ taskId: string }, {}, {}>, res: Response, next: NextFunction) => {
     try {
         const { taskId } = req.params;
@@ -95,6 +109,13 @@ export const getTaskDetail = async (req: Request<{ taskId: string }, {}, {}>, re
         next(err);
     }
 }
+
+
+/**
+ * @throws { AppError } If task not found.
+ * @throws { AppError } If user not found.
+ * @throws { Error } For unexpected database or runtime errors.
+ */
 
 export const reassignTask = async (req: Request<{ taskId: string }>, res: Response, next: NextFunction) => {
     try {

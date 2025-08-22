@@ -8,6 +8,10 @@ import { CreateProjectBody, ListProjectsQuery } from "types/interfaces";
 
 const projectRepo = AppDataSource.getRepository(Project);
 
+/**
+ * @throws { AppError } If owner was not found.
+ * @throws { Error } For unexpected database or runtime errors.
+*/
 export const createProject = async (req: Request<{}, {}, CreateProjectBody>, res: Response<{ project: Project }>, next: NextFunction) => {
     try {
         const { name, description, ownerId } = req.body;
@@ -26,6 +30,10 @@ export const createProject = async (req: Request<{}, {}, CreateProjectBody>, res
         next(err);
     }
 }
+
+/**
+ * @throws { Error } For unexpected database or runtime errors.
+*/
 
 export const listProjects = async (req: Request<{}, {}, ListProjectsQuery>, res: Response, next: NextFunction) => {
     try {
